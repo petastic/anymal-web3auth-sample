@@ -17,7 +17,12 @@ export function useVerifySession() {
         AUTH_SERVICE_BASE_URL
       );
 
-      return await getUser(dbAuthToken, DISTRIBUTED_DB_URL);
+      const user = await getUser(dbAuthToken, DISTRIBUTED_DB_URL);
+
+      return {
+        user,
+        dbAuthToken,
+      };
     },
     [getUser, verifyWeb3AuthSession]
   );
