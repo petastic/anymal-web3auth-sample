@@ -118,7 +118,9 @@ export function AuthProvider({ children }: Props) {
   // This will open up the web3auth login modal
   const openWeb3ModalFn = useCallback(async () => {
     try {
+      console.log("openWeb3Modal");
       await web3auth.connect();
+      console.log("connected with web3");
 
       if (web3auth.connected) {
         setIsLoggedIn(true);
@@ -136,6 +138,7 @@ export function AuthProvider({ children }: Props) {
   }, []);
 
   useEffect(() => {
+    console.log("Connected Event");
     if (listenerAddedRef.current) {
       console.warn("Already initiated web3auth");
       return;
