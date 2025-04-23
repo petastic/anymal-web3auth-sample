@@ -37,11 +37,13 @@ export function AppLogin() {
     }, [state, redirectUri, authEndpoint]);
 
     return (
-        <button
-            onClick={handleClick}
-            className="rounded-full px-5 py-1 bg-black text-white font-semibold"
-        >
-            Login with Anymal
-        </button>
+        <div className="space-y-5 flex flex-col h-screen justify-center items-center">
+            <button
+                onClick={handleClick}
+                className="rounded-full px-5 py-1 bg-black text-white font-semibold"
+            >
+                Login with Anymal
+            </button>
+        </div>
     );
 }

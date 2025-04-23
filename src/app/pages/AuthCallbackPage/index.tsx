@@ -19,13 +19,8 @@ export function AuthCallbackPage() {
         if (userId && !error) {
             (async () => {
                 try {
-                    const env = await fetchAuthEnvelope("localnet");
+                    const env = await fetchAuthEnvelope("testnet");
                     setEnvelope(env);
-                    // e.g. call your backend with the token:
-                    // const res = await fetch(`/api/users/${userId}/data`, {
-                    //   headers: { Authorization: `Bearer ${env.token}` }
-                    // });
-                    // ...
 
                     const endpoint = import.meta.env.VITE_ANYMAL_GRAPHQL_ENDPOINT!;
                     const list = await fetchAnymals({
