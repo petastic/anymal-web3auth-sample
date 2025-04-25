@@ -10,7 +10,7 @@ export function Login() {
         className="rounded-full px-5 py-1 bg-black text-white font-semibold"
         onClick={openWeb3ModalFn}
       >
-        Login with Anymal
+        Connect with Anymal
       </button>
     </div>
   );
