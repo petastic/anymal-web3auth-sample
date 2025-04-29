@@ -11,6 +11,7 @@ export interface AnymalData {
   petAndOwnerImageUrl: string;
   gender: string;
   weightLbs: number;
+  temp_docID: string | null;
   caregiverId: string;
   caregiverNearId: string;
   source: string;

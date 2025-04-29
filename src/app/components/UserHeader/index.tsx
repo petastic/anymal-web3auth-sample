@@ -3,6 +3,7 @@ import { useCallback, useLayoutEffect, useState } from "react";
 
 export function UserHeader() {
   const [kibble, setKibble] = useState(0);
+
   const {
     web3AuthLogoutFn,
     userData,
@@ -15,14 +16,12 @@ export function UserHeader() {
   const getKibbleBalance = useCallback(() => {
     if (!publicClientData || addresses.length === 0 || !userData) return;
 
-    fetchKibbleBalance(publicClientData, userData.baseWalletAddress).then(
-      (res) => {
-        if (typeof res === "number") {
-          setKibble(res);
-        }
+    fetchKibbleBalance(publicClientData, addresses[0]).then((res) => {
+      if (typeof res === "number") {
+        setKibble(res);
       }
-    );
-  }, [addresses.length, fetchKibbleBalance, publicClientData, userData]);
+    });
+  }, [addresses, fetchKibbleBalance, publicClientData, userData]);
 
   useLayoutEffect(() => {
     getKibbleBalance();
