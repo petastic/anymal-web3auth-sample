@@ -2,7 +2,11 @@ import { ADAPTER_EVENTS, WEB3AUTH_NETWORK } from "@web3auth/base";
 import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { AuthContext } from "./authContext";
 import { Web3Auth, Web3AuthOptions } from "@web3auth/modal";
-import { chainConfig, WEB3AUTH_CLIENT_ID } from "../../helpers/AuthHelper.tsx";
+import {
+  accountAbstractionProvider,
+  chainConfig,
+  WEB3AUTH_CLIENT_ID,
+} from "../../helpers/AuthHelper.tsx";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { safeatob } from "@web3auth/auth-adapter";
 import {
@@ -28,6 +32,7 @@ const web3AuthOptions: Web3AuthOptions = {
   clientId: WEB3AUTH_CLIENT_ID,
   web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_DEVNET,
   privateKeyProvider,
+  accountAbstractionProvider,
 };
 
 const web3auth = new Web3Auth(web3AuthOptions);
@@ -118,7 +123,6 @@ export function AuthProvider({ children }: Props) {
   // This will open up the web3auth login modal
   const openWeb3ModalFn = useCallback(async () => {
     try {
-      console.log("openWeb3Modal");
       await web3auth.connect();
       console.log("connected with web3");
 

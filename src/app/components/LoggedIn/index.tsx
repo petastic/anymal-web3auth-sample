@@ -3,6 +3,7 @@ import { useCallback, useState } from "react";
 import { useGetAnymals } from "../../hooks/useGetAnymals.ts";
 import { UserHeader } from "../UserHeader";
 import { AnymalData } from "../../../types/Anymal.ts";
+import { useNavigate } from "react-router-dom";
 
 const anymalCardCls =
   "bg-[#333333] capitalize rounded-full text-white px-2 text-sm";
@@ -11,6 +12,7 @@ export function LoggedIn() {
   const [anymals, setAnymals] = useState<AnymalData[]>([]);
   const { userData, dbAuthToken } = useAuthContext();
   const getAnymals = useGetAnymals();
+  const navigate = useNavigate();
 
   // Calls all the anymals associated with the logged-in user
   const getAnymalsFn = useCallback(() => {
@@ -25,6 +27,14 @@ export function LoggedIn() {
     <>
       <UserHeader />
       <div className="w-full mt-15 flex flex-col">
+        <div className="flex justify-center py-2">
+          <button
+            onClick={() => navigate("create-anymal")}
+            className="bg-black rounded-full w-fit px-2 text-white py-1"
+          >
+            Add Anymal
+          </button>
+        </div>
         {anymals.length === 0 && (
           <div className="w-full flex justify-center">
             <button
