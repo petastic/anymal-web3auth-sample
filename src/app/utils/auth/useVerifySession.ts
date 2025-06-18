@@ -1,29 +1,33 @@
 import { useCallback } from "react";
-import { useFetchUserData, useVerifyWeb3AuthSession } from "anymal-protocol";
 import {
-  AUTH_SERVICE_BASE_URL,
-  DISTRIBUTED_DB_URL,
+  AUTH_SERVICE_BASE_URL, FIREBASE_REST_API_URL,
 } from "../../helpers/AuthHelper.tsx";
+import {useVerifyFirebaseSession} from "./useVerifyFirebaseSession.ts";
+import {useFetchFirestoreUserData} from "../account/useFetchFirestoreUserData.tsx";
 
 export function useVerifySession() {
-  const getUser = useFetchUserData();
-  const verifyWeb3AuthSession = useVerifyWeb3AuthSession();
+  const getUser = useFetchFirestoreUserData();
+  const verifyFirebaseSession = useVerifyFirebaseSession();
 
   return useCallback(
-    async (token: string, public_key: string) => {
-      const dbAuthToken = await verifyWeb3AuthSession(
+    async (token: string, public_key: string, pid: string, walletAddress: string) => {
+      const context = `user:${pid}`;
+      const dbAuthToken = await verifyFirebaseSession(
         token,
+        context,
         public_key,
-        AUTH_SERVICE_BASE_URL
+        AUTH_SERVICE_BASE_URL,
+        walletAddress
       );
 
-      const user = await getUser(dbAuthToken, DISTRIBUTED_DB_URL);
+      // Call Firebase REST api rather than Defra
+      const user = await getUser(dbAuthToken, FIREBASE_REST_API_URL, pid);
 
       return {
         user,
         dbAuthToken,
       };
     },
-    [getUser, verifyWeb3AuthSession]
+    [getUser, verifyFirebaseSession]
   );
 }

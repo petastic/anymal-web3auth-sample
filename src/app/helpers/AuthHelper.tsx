@@ -42,3 +42,6 @@ export const AUTH_SERVICE_BASE_URL =
   import.meta.env.VITE_PUBLIC_AUTH_SERVICE_BASE_URL || "Invalid Base URL";
 export const DISTRIBUTED_DB_URL =
   import.meta.env.VITE_PUBLIC_GRAPHQL_ENDPOINT || "Invalid Database URL";
+export const FIREBASE_REST_API_URL =
+  import.meta.env.VITE_PUBLIC_FIREBASE_REST_API_URL ||
+  "Invalid Firebase API URL";

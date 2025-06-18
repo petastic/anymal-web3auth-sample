@@ -16,6 +16,7 @@ interface AuthContextType {
   walletClientData: any | null;
   addresses: string[];
   userData: UserData | null;
+  idToken: string | null;
   dbAuthToken: string | null;
   setDbAuthToken: (token: string) => void;
 }

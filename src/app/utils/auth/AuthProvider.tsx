@@ -19,6 +19,7 @@ import {
 import { baseSepolia } from "viem/chains";
 import { useVerifySession } from "./useVerifySession.ts";
 import { UserData } from "../../../types/User.ts";
+import { useCreateAccount } from "./useCreateAccount.ts";
 
 interface Props {
   children: ReactNode | ReactNode[];
@@ -30,7 +31,7 @@ const privateKeyProvider = new EthereumPrivateKeyProvider({
 
 const web3AuthOptions: Web3AuthOptions = {
   clientId: WEB3AUTH_CLIENT_ID,
-  web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_DEVNET,
+  web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
   privateKeyProvider,
   accountAbstractionProvider,
 };
@@ -52,6 +53,9 @@ export function AuthProvider({ children }: Props) {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [initialized, setInitialized] = useState(false);
   const [dbAuthToken, setDbAuthToken] = useState<string | null>(null);
+  const [idToken, setIdToken] = useState<string | null>(null);
+
+  const createAnymalMongoAccount = useCreateAccount();
 
   // This call gets the users kibble balance
   const fetchKibbleBalance = useCallback(
@@ -102,14 +106,20 @@ export function AuthProvider({ children }: Props) {
         setPublicKey(parsedToken.wallets[0].public_key);
 
         if (user.idToken) {
-          // Verify the web3auth session and get the users data
-          const res = await verifyWeb3Session(
-            user.idToken,
-            parsedToken.wallets[0].public_key
-          );
+          setIdToken(user.idToken);
+          // Set the idToken
+          const createAccountRes = await createAnymalMongoAccount(user.email);
 
-          setUserData(res.user);
-          setDbAuthToken(res.dbAuthToken);
+          if (createAccountRes.success) {
+            const res = await verifyWeb3Session(
+              user.idToken,
+              parsedToken.wallets[0].public_key,
+              createAccountRes.data.account_id,
+              parsedToken.wallets[0].address
+            );
+            setUserData(res.user as UserData);
+            setDbAuthToken(res.dbAuthToken);
+          }
         }
 
         setIsLoggedIn(true);
@@ -118,7 +128,7 @@ export function AuthProvider({ children }: Props) {
     } catch (e) {
       console.error(e);
     }
-  }, [verifyWeb3Session]);
+  }, [createAnymalMongoAccount, verifyWeb3Session]);
 
   // This will open up the web3auth login modal
   const openWeb3ModalFn = useCallback(async () => {
@@ -192,6 +202,7 @@ export function AuthProvider({ children }: Props) {
         userData,
         dbAuthToken,
         setDbAuthToken,
+        idToken,
       }}
     >
       {children}
