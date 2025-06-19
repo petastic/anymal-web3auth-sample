@@ -9,5 +9,5 @@ export async function fetchAuthEnvelope(
         body: JSON.stringify({ network, options }),
     });
     if (!resp.ok) throw new Error("Failed to create auth envelope");
-    return resp.json() as Promise<{ publicKey: string; token: string }>;
+    return resp.json() as Promise<{ firebaseToken: string, appId: string }>;
 }

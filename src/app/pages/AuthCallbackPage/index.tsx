@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {fetchAuthEnvelope} from "../../utils/auth/fetchAuthEnvelope";
-import { fetchAnymals } from "anymal-protocol";
+import {useGetAnymals} from "../../hooks/useGetAnymals.ts";
 
 export function AuthCallbackPage() {
     const { search } = useLocation();
@@ -11,9 +11,12 @@ export function AuthCallbackPage() {
     const error  = params.get("error");
     const state  = params.get("state");
 
-    const [envelope, setEnvelope] = useState<{ publicKey: string; token: string } | null>(null);
+    const [envelope, setEnvelope] = useState<{ firebaseToken: string, appId: string } | null>(null);
     const [fetchError, setFetchError] = useState<string | null>(null);
     const [anymals, setAnymals] = useState<any[]>([]);
+
+    const getAnymals = useGetAnymals();
+
 
     useEffect(() => {
         if (userId && !error) {
@@ -22,12 +25,8 @@ export function AuthCallbackPage() {
                     const env = await fetchAuthEnvelope("testnet");
                     setEnvelope(env);
 
-                    const endpoint = import.meta.env.VITE_ANYMAL_GRAPHQL_ENDPOINT!;
-                    const list = await fetchAnymals({
-                        dbAuthToken: env.token,
-                        endpoint,
-                        userPid: userId,
-                    });
+                    const list = await getAnymals( userId , env.appId, env.firebaseToken);
+
                     setAnymals(list);
 
                 } catch (err) {

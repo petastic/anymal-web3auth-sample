@@ -4,7 +4,7 @@ import { nodePolyfills } from "vite-plugin-node-polyfills";
 import { createRequire } from "module";
 
 const require = createRequire(import.meta.url);
-const { generateAppSignature, createAuthEnvelope } = require("anymal-protocol");
+const { generateAppSignature, getFirebaseTokenForApp } = require("anymal-protocol");
 
 /**
  * In dev‐only, intercept POST /generate-login-url
@@ -46,7 +46,7 @@ function localSignatureProxy(APP_ID: string, PRIV_KEY: string): Plugin {
 }
 
 /** Dev‑only: intercept POST /create-auth-envelope */
-function localAuthEnvelopeProxy(PRIV_KEY: string): Plugin {
+function localAuthEnvelopeProxy(APP_ID: string, PRIV_KEY: string): Plugin {
   return {
     name: "vite-plugin-anymal-auth-envelope-proxy",
     configureServer(server) {
@@ -56,15 +56,10 @@ function localAuthEnvelopeProxy(PRIV_KEY: string): Plugin {
           req.on("data", (chunk) => (body += chunk));
           req.on("end", async () => {
             try {
-              // client can send { network, options }
-              const { network, options } = JSON.parse(body);
-              const envelope = await createAuthEnvelope(
-                  PRIV_KEY,
-                  network,
-                  options
-              );
+              // client can send { network }
+              const { firebaseToken } = await getFirebaseTokenForApp(PRIV_KEY, APP_ID, 'localnet');
               res.setHeader("Content-Type", "application/json");
-              res.end(JSON.stringify(envelope));
+              res.end(JSON.stringify({firebaseToken, appId: APP_ID}));
             } catch (err) {
               console.error(err);
               res.statusCode = 500;
@@ -95,7 +90,7 @@ export default defineConfig(({ mode }) => {
       }),
       // only hook our proxy in development:
       mode === "development" && localSignatureProxy(APP_ID, PRIV_KEY),
-      mode === "development" && localAuthEnvelopeProxy(PRIV_KEY),
+      mode === "development" && localAuthEnvelopeProxy(APP_ID, PRIV_KEY),
     ].filter(Boolean),
 
     server: {
